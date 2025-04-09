@@ -1,6 +1,6 @@
 Package: SDModels
 Title: Spectrally Deconfounded Models
-Version: 1.0.4
+Version: 1.0.7
 Authors@R: c(
   person("Markus", "Ulmer", email = "markus.ulmer@stat.math.ethz.ch", 
          role = c("aut", "cre", "cph"), comment = c(ORCID = "0000-0001-7783-8475")), 
@@ -16,13 +16,13 @@ RdMacros: Rdpack
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
-URL: https://markusul.github.io/SDModels/
+URL: https://www.markus-ulmer.ch/SDModels/
 BugReports: https://github.com/markusul/SDModels/issues
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-02-18 10:55:30 UTC; maulmer
+Packaged: 2025-04-09 14:35:59 UTC; ulmer
 Author: Markus Ulmer [aut, cre, cph] (<https://orcid.org/0000-0001-7783-8475>),
   Cyrill Scheidegger [aut] (<https://orcid.org/0009-0005-2851-1384>)
 Maintainer: Markus Ulmer <markus.ulmer@stat.math.ethz.ch>
 Repository: CRAN
-Date/Publication: 2025-02-19 14:30:08 UTC
+Date/Publication: 2025-04-09 14:50:07 UTC

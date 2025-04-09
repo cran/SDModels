@@ -6,6 +6,8 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/markusul/SDModels/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/markusul/SDModels/actions/workflows/R-CMD-check.yaml)
+![CRAN Downloads
+overall](https://cranlogs.r-pkg.org/badges/grand-total/SDModels?color=brightgreen)
 <!-- badges: end -->
 
 Spectrally Deconfounded Models (SDModels) is a package with methods to
@@ -52,7 +54,7 @@ or
 This is a basic example on how to estimate the direct effect of $X$ on
 $Y$ using SDForest. You can learn more about analyzing sparse direct
 effects estimated by SDForest in the article
-[SDForest](https://markusul.github.io/SDModels/articles/SDForest.html).
+[SDForest](https://www.markus-ulmer.ch/SDModels/articles/SDForest.html).
 
 ``` r
 library(SDModels)
@@ -79,7 +81,7 @@ fit
 
 You can also estimate just one Spectrally Deconfounded Regression Tree
 using the `SDTree` function. See also the article
-[SDTree](https://markusul.github.io/SDModels/articles/SDTree.html).
+[SDTree](https://www.markus-ulmer.ch/SDModels/articles/SDTree.html).
 
 ``` r
 Tree <- SDTree(Y ~ ., train_data, cp = 0.03)
@@ -99,7 +101,7 @@ Tree
 
 Or you can estimate a Spectrally Deconfounded Additive Model, with
 theoretical guarantees, using the `SDAM` function. See also the article
-[SDAM](https://markusul.github.io/SDModels/articles/SDAM.html).
+[SDAM](https://www.markus-ulmer.ch/SDModels/articles/SDAM.html).
 
 ``` r
 model <- SDAM(Y ~ ., train_data)
