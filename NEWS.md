@@ -1,3 +1,16 @@
+# SDModels 1.0.13
+
+* In case of parallel processing use random number generator "L'Ecuyer-CMRG" for reproducibility
+
+# SDModels 1.0.12
+
+* Fix extended SDAM example
+
+# SDModels 1.0.11
+
+* Add option to plot SDForests. The plot shows the out-of-bag performance against the number
+of trees. This helps to evaluate whether enough trees were used.
+
 # SDModels 1.0.10
 
 * Added feature to select some predictors not to be regularized closes option to use some covariates not regularized in SDAM #4
