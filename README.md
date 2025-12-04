@@ -76,8 +76,8 @@ fit
 #> 
 #> Number of trees:  100 
 #> Number of covariates:  50 
-#> OOB loss:  0.1684875 
-#> OOB spectral loss:  0.05250606
+#> OOB loss:  0.1554798 
+#> OOB spectral loss:  0.05246865
 ```
 
 You can also estimate just one Spectrally Deconfounded Regression Tree
@@ -85,20 +85,11 @@ using the `SDTree` function. See also the article
 [SDTree](https://www.markus-ulmer.ch/SDModels/articles/SDTree.html).
 
 ``` r
-Tree <- SDTree(Y ~ ., train_data, cp = 0.03)
-
-# plot the tree
-Tree
-#>   levelName     value          s  j        label decision n_samples
-#> 1 1         0.8295434  0.5186858 24  X24 <= 0.52                100
-#> 2  ¦--1     0.6418912 -2.0062213 25 X25 <= -2.01      yes        63
-#> 3  ¦   ¦--1 0.1522660         NA NA          0.2      yes         9
-#> 4  ¦   °--3 0.6609876         NA NA          0.7       no        54
-#> 5  °--2     1.1821439  1.5229617 24  X24 <= 1.52       no        37
-#> 6      ¦--2 1.0367566         NA NA            1      yes        19
-#> 7      °--4 1.4551242         NA NA          1.5       no        18
-#plot(Tree)
+Tree <- SDTree(Y ~ ., train_data, cp = 0.01)
+plot(Tree)
 ```
+
+<img src="man/figures/README-SDTree-1.png" width="100%" />
 
 Or you can estimate a Spectrally Deconfounded Additive Model, with
 theoretical guarantees, using the `SDAM` function. See also the article
@@ -108,7 +99,6 @@ theoretical guarantees, using the `SDAM` function. See also the article
 model <- SDAM(Y ~ ., train_data)
 #> [1] "Initial cross-validation"
 #> [1] "Second stage cross-validation"
-
 model
 #> SDAM result
 #> 
@@ -149,7 +139,9 @@ J. Data Sci.* <https://doi.org/10.1145/3711116>.
 class="csl-entry">
 
 Ulmer, Markus, Cyrill Scheidegger, and Peter Bühlmann. 2025. “Spectrally
-Deconfounded Random Forests.” <https://arxiv.org/abs/2502.03969>.
+Deconfounded Random Forests.” *Journal of Computational and Graphical
+Statistics*. ASA Website.
+<https://doi.org/10.1080/10618600.2025.2569602>.
 
 </div>
 

@@ -11,11 +11,6 @@ knitr::opts_chunk$set(
 # # performs cross validation in parallel
 # model <- SDAM(X, Y, cv_k = 5, mc.cores = 5)
 
-## ----gpu, eval=FALSE----------------------------------------------------------
-# # runs the matrix operations on a gpu if available
-# fit <- SDForest(x = X, y = Y, gpu = T, mem_size = 1e+7)
-# tree <- SDTree(x = X, y = Y, gpu = T, mem_size = 1e+7)
-
 ## ----candidates, eval=FALSE---------------------------------------------------
 # # approximation of candidate splits
 # fit <- SDForest(x = X, y = Y, max_candidates = 100)
