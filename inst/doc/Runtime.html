@@ -373,25 +373,34 @@ written in <span class="citation">R Core Team (2024)</span> for now and
 it gets quite slow for larger sample sizes. There might be a faster cpp
 version in the future, but for now, there are a few ways to increase the
 computations if you apply the methods to larger data sets.</p>
-<div id="computations" class="section level2">
-<h2>Computations</h2>
-<p>Some speedup can be achieved by taking advantage of modern
-hardware.</p>
-<div id="multicore" class="section level3">
-<h3>Multicore</h3>
-<p>When estimating an SDForest, the most obvious way to increase the
-computations is to fit the individual trees on different cores in
-parallel. Parallel computing is supported for both Unix and Windows.
-Depending on how your system is set up, some linear algebra libraries
-might already run in parallel. In this case, the speed improvement from
-choosing more than one core to run on might not be that large. Be aware
-of potential RAM-overflows.</p>
+<div id="parallel-processing" class="section level2">
+<h2>Parallel Processing</h2>
+<p>Many of our functions support parallel processing using the parameter
+<code>mc.cores</code> to control the number of cores used.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># fits the individual SDTrees in parallel on 22 cores</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">SDForest</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">mc.cores =</span> <span class="dv">22</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># performs cross validation in parallel</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">SDAM</span>(X, Y, <span class="at">cv_k =</span> <span class="dv">5</span>, <span class="at">mc.cores =</span> <span class="dv">5</span>)</span></code></pre></div>
-</div>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># predicts with the individual SDTrees in parallel</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">predict</span>(fit, <span class="at">newdata =</span> <span class="fu">data.frame</span>(X), <span class="at">mc.cores =</span> <span class="dv">10</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># evaluates different strengths of regularization in parallel</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>paths <span class="ot">&lt;-</span> <span class="fu">regPath</span>(fit, <span class="at">mc.cores =</span> <span class="dv">10</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># predicts potential outcomes for different values of covariate one in parallel</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>pd <span class="ot">&lt;-</span> <span class="fu">partDependence</span>(model, <span class="dv">1</span>, <span class="at">mc.cores =</span> <span class="dv">10</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co"># performs cross validation in parallel</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">SDAM</span>(X, Y, <span class="at">cv_k =</span> <span class="dv">5</span>, <span class="at">mc.cores =</span> <span class="dv">5</span>)</span></code></pre></div>
+<p>To support parallelization, we use the R package <a href="https://future.futureverse.org/">future</a> <span class="citation">Bengtsson (2021)</span>. If <code>mc.cores</code> is
+larger than one, <code>multicore</code> (forking of processes) is used
+if possible, and <code>multisession</code> otherwise. If
+<code>mc.cores</code> is smaller than two, we process sequentially or
+use a pre-specified plan. This way, a user can freely choose and set up
+any <a href="https://future.futureverse.org/articles/future-2b-backend.html">backend</a>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># predefined plan</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>future<span class="sc">::</span><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">2</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># fits the individual SDTrees in parallel on 2 cores</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">SDForest</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y)</span></code></pre></div>
 </div>
 <div id="approximations" class="section level2">
 <h2>Approximations</h2>
@@ -403,17 +412,22 @@ observations, the number of potential splits grows too large. We,
 therefore, evaluate maximal <code>max_candidates</code> splits of the
 potential ones and choose them according to the quantiles of the
 potential ones.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># approximation of candidate splits</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">SDForest</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">max_candidates =</span> <span class="dv">100</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">SDTree</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">max_candidates =</span> <span class="dv">50</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># approximation of candidate splits</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">SDForest</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">max_candidates =</span> <span class="dv">100</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>tree <span class="ot">&lt;-</span> <span class="fu">SDTree</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">max_candidates =</span> <span class="dv">50</span>)</span></code></pre></div>
 <p>If we have many observations, we can reduce computing time by only
 sampling <code>max_size</code> observations from the data instead of
 <span class="math inline">\(n\)</span>. This can dramatically reduce
 computing time compared to a full bootstrap sample but could also
 decrease performance.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># draws maximal 500 samples from the data for each tree</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">SDForest</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">max_size =</span> <span class="dv">500</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># draws maximal 500 samples from the data for each tree</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">SDForest</span>(<span class="at">x =</span> X, <span class="at">y =</span> Y, <span class="at">max_size =</span> <span class="dv">500</span>)</span></code></pre></div>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-RJ-2021-048" class="csl-entry">
+Bengtsson, Henrik. 2021. <span>“A Unifying Framework for Parallel and
+Distributed Processing in r Using Futures.”</span> <em>The R
+Journal</em> 13 (2): 208–27. <a href="https://doi.org/10.32614/RJ-2021-048">https://doi.org/10.32614/RJ-2021-048</a>.
+</div>
 <div id="ref-RCoreTeam2024R:Computing" class="csl-entry">
 R Core Team. 2024. <span>“<span class="nocase">R: A Language and
 Environment for Statistical Computing</span>.”</span> Vienna, Austria.
